@@ -11,6 +11,11 @@ There are 3 main packages (sometimes each one may include an "input/services" an
 
 Code: pretty straightforward, cleaned up a little with Sonar, formatted with Eclipse built in style.
 
+a property "napptilus.prices.mode" is set to "standalone" when running standalone. Feel free to change application properties:
+server.port=8080
+server.servlet.context-path=/prices
+to the configuration that suits your server.
+
 Testing:
 there are a few unitary tests that provide decent coverage of:
 -Service

@@ -2,6 +2,7 @@ package com.napptilus.prices.application.rest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -26,11 +27,20 @@ class PriceControllerIT {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PriceControllerIT.class);
 
-	private static int PORT = 8080;
-
+	private static final String DEFAULT_PORT = "8080";
+	private static final String DEFAULT_APP_NAME = "/prices";
+	private static String port = DEFAULT_PORT;
+	private static String appName = DEFAULT_APP_NAME;
+	   
 	TestRestTemplate restTemplate = new TestRestTemplate();
 	HttpHeaders headers = new HttpHeaders();
 
+	@BeforeAll
+	static void isAppRunningStandaloneOrNot() {
+		appName = System.getProperty("server.servlet.context-path", DEFAULT_APP_NAME);
+		port = System.getProperty("server.port", DEFAULT_PORT); 
+	}
+	
 	/**
 	 * Individual test
 	 */
@@ -39,15 +49,14 @@ class PriceControllerIT {
 		headers.add("Content-Type", "application/json");
 		HttpEntity<String> entity = new HttpEntity<>(null, headers);
 		String expected = "{\"brandId\":1,\"startDate\":\"2020-06-14T00:00:00\",\"endDate\":\"2020-12-31T23:59:59\",\"priceList\":1,\"productId\":35455,\"priority\":0,\"price\":35.5,\"curr\":\"EUR\"}";
-		String fullUriPath = "http://localhost:" + PORT + "/price/1/35455/2020-06-14-00.00.01";
+		String fullUriPath = "http://localhost:" + port + appName + "/price/1/35455/2020-06-14-00.00.01";
 		String responseStr = null;
 		try {
 			LOG.info("Sending GET request to [" + fullUriPath + "]");
 			ResponseEntity<String> response = restTemplate.exchange(fullUriPath, HttpMethod.GET, entity, String.class);
 			responseStr = response.getBody();
 		} catch (ResourceAccessException e) {
-			LOG.error("TEST FAILED: Couldn't connect to the server... is It up and running? is port " + PORT
-					+ " opened?");
+			LOG.error("TEST FAILED: Couldn't connect to the server... is It up and running? is port opened?");
 		}
 		assertEquals(expected, responseStr, "GET request to [" + fullUriPath + "] FAILED!");
 	}
@@ -76,15 +85,14 @@ class PriceControllerIT {
 	void isInsidePriceRangeMultiple(String input, String expectedResult) {
 		headers.add("Content-Type", "application/json");
 		HttpEntity<String> entity = new HttpEntity<>(null, headers);
-		String fullUriPath = "http://localhost:" + PORT + "/price/" + input;
+		String fullUriPath = "http://localhost:" + port + appName + "/price/" + input;
 		String responseStr = null;
 		try {
 			LOG.info("Sending GET request to [" + fullUriPath + "]");
 			ResponseEntity<String> response = restTemplate.exchange(fullUriPath, HttpMethod.GET, entity, String.class);
 			responseStr = response.getBody();
 		} catch (ResourceAccessException e) {
-			LOG.error("TEST FAILED: Couldn't connect to the server... is It up and running? is port " + PORT
-					+ " opened?");
+			LOG.error("TEST FAILED: Couldn't connect to the server... is It up and running? is port opened?");
 		}
 		assertEquals(expectedResult, responseStr, "GET request to [" + fullUriPath + "] FAILED!");
 	}
