@@ -21,9 +21,9 @@ public class PriceController {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PriceController.class);
 
+	@Autowired
 	private final PriceService priceService;
 
-	@Autowired
 	public PriceController(PriceService priceService) {
 		super();
 		this.priceService = priceService;
